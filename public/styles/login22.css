@@ -1,0 +1,37 @@
+/* 定义基本样式 */
+html,body{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+#app{
+    height: 100%;
+    position: relative;
+    background: url(../images/4.jpg);
+    background-position: center;
+}
+/* 定义登录框 */
+#loginForm{
+    width: 400px;
+    height: 300px;
+    border: 3px solid #ccc;
+    padding-right: 30px;
+    padding-bottom: 15px;
+    border-radius: 7px;
+    /* 定位登录框绝对居中 */
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    margin-left: 880px;
+    background-color: rgba(59, 72, 89, 0.9)
+}
+#loginForm .title{
+    margin-left: 100px;
+    color:#fff;
+}
+.el-form-item__label{
+    color: #fff;
+}

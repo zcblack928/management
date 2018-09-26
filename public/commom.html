@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>系统信息</title>
+    <!-- vue.min.js -->
+    <script src="./libs/vue/vue.min.js"></script>
+    <!-- elementui.min.js -->
+    <script src="./libs/elementui/js/elementui.min.js"></script>
+    <!-- elementui.min.css -->
+    <link rel="stylesheet" href="./libs/elementui/css/elementui.min.css">
+    <!-- 自己的样式 -->
+    <link rel="stylesheet" href="./styles/index.css">
+</head>
+
+<body>
+    <!-- 创建模板 -->
+    <div id="app">
+        <el-container>
+            
+            
+            <!-- 右边容器 -->
+            <el-main>
+                <!-- 顶部 -->
+                <div class="el-main-top">
+                    <h1>欢迎您 admin</h1>
+                    <p>查看详细系统信息。</p>
+                </div>
+                <!-- 中间主体 -->
+                <div class="el-center">
+                    <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <h4>系统信息</h4>
+                        </div>
+                        <!-- 中间内容弹出框 -->
+                        <el-alert class="el-alert" title="成功提示的文案" type="success">
+                        </el-alert>
+                        <el-alert class="el-alert" title="警告提示的文案" type="warning">
+                        </el-alert>
+                        <!-- 均分左右 -->
+                        <el-row :gutter="20">
+                            <el-col :span="12">
+                                <!-- 左边表格 -->
+                                <div class="grid-content bg-purple">
+                                    <el-card class="box-card">
+                                        <div slot="header" class="clearfix">
+                                            <h4>系统信息</h4>
+                                        </div>
+                                        <!-- 表格内容 -->
+                                        <el-table ref="multipleTable" :data="tableData3" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange">
+                                            <el-table-column type="selection" width="55">
+                                            </el-table-column>
+                                            <el-table-column prop="goodsName" label="商品名称">
+                                            </el-table-column>
+                                            <el-table-column prop="selfs" label="销量">
+                                            </el-table-column>
+                                        </el-table>
+                                        <!-- <div style="margin-top: 20px">
+                                            <el-button @click="toggleSelection([tableData3[1], tableData3[2]])">切换第二、第三行的选中状态</el-button>
+                                            <el-button @click="toggleSelection()">取消选择</el-button>
+                                        </div> -->
+                                    </el-card>
+                                </div>
+                            </el-col>
+                            <el-col :span="12">
+                                <!-- 右边表格 -->
+                                <div class="grid-content bg-purple-light">
+                                    <el-card class="box-card">
+                                        <div slot="header" class="clearfix">
+                                            <h4>缺货的的商品</h4>
+                                        </div>
+                                        <!-- 表格内容 -->
+                                        <el-table :data="tableData" style="width: 100%">
+                                            <el-table-column prop="goodsName" label="商品名称">
+                                            </el-table-column>
+                                            <el-table-column  prop="repertory" label="库存">
+                                            </el-table-column>
+                                            <el-table-column label="操作">
+                                                <template slot-scope="scope">
+                                                    <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                                                    <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                                </template>
+                                            </el-table-column>
+                                        </el-table>
+                                    </el-card>
+                                </div>
+                            </el-col>
+                        </el-row>
+                    </el-card>
+                </div>
+                <!-- 底部 -->
+                <div class="footer">
+                    &copy;Copyright 2018 华联超市管理系统
+                </div>
+            </el-main>
+
+        </el-container>
+    </div>
+    <script>
+        // 创建实例
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    tableData3: [{
+                        goodsName: '春节套',
+                        selfs: '10000',
+                    },
+                    {
+                        goodsName: '春节套',
+                        selfs: '10000',
+                    },
+                    {
+                        goodsName: '春节套',
+                        selfs: '10000',
+                    },
+                    {
+                        goodsName: '春节套',
+                        selfs: '10000',
+                    }],
+                    multipleSelection: [],
+                    tableData: [{
+                        goodsName: '国庆套',
+                        repertory: '100',
+                    }]
+                }
+            },
+
+            methods: {
+                toggleSelection(rows) {
+                    if (rows) {
+                        rows.forEach(row => {
+                            this.$refs.multipleTable.toggleRowSelection(row);
+                        });
+                    } else {
+                        this.$refs.multipleTable.clearSelection();
+                    }
+                },
+                handleSelectionChange(val) {
+                    this.multipleSelection = val;
+                },
+                handleOpen(key, keyPath) {
+                    console.log(key, keyPath);
+                },
+                handleClose(key, keyPath) {
+                    console.log(key, keyPath);
+                },
+                //缺货商品
+                handleEdit(index, row) {
+                    console.log(index, row);
+                },
+                handleDelete(index, row) {
+                    console.log(index, row);
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

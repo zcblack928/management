@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>修改账号密码</title>
+    <!-- 引入jquery -->
+    <script src="./libs/jquery/jquery.min.js"></script>
+    <!-- vue.min.js -->
+    <script src="./libs/vue/vue.min.js"></script>
+    <!-- elementui.min.js -->
+    <script src="./libs/elementui/js/elementui.min.js"></script>
+    <!-- elementui.min.css -->
+    <link rel="stylesheet" href="./libs/elementui/css/elementui.min.css">
+    <!-- 自己的样式 -->
+    <link rel="stylesheet" href="./styles/index.css">
+    <link rel="stylesheet" href="./styles/userAdd.css">
+</head>
+
+<body>
+    <!-- 创建模板 -->
+    <div id="app">
+        <el-container>
+            
+            <!-- 右边容器 -->
+            <el-main>
+                <!-- 顶部 -->
+                <div class="el-main-top">
+                    <h1>欢迎您 admin</h1>
+                    <p>修改账号密码</p>
+                </div>
+                <!-- 中间主体 -->
+                <div class="el-center">
+                    <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <h4>修改账号密码</h4>
+                        </div>
+                        <!-- 修改账号密码界面 -->
+                        <div id="loginForm">
+                            <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm" label-width="100px" class="demo-ruleForm">
+                                <el-form-item label="账&emsp;号" prop="username">
+                                    <el-input type="text" v-model="loginForm.username" autocomplete="off"></el-input>
+                                </el-form-item>
+                                <el-form-item label="密&emsp;码" prop="password">
+                                    <el-input type="password" v-model="loginForm.password" autocomplete="off"></el-input>
+                                </el-form-item>
+                                <el-form-item label="确认密码" prop="comfirmPassword">
+                                    <el-input v-model.number="loginForm.comfirmPassword"></el-input>
+                                </el-form-item>
+                                <el-form-item label="选择用户组" prop="region">
+                                    <el-select v-model="loginForm.region" placeholder="请选择用户组">
+                                        <el-option label="普通会员" value="普通会员"></el-option>
+                                        <el-option label="超级会员" value="超级会员"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
+                                    <el-button @click="resetForm('loginForm')">重置</el-button>
+                                </el-form-item>
+                            </el-form>
+                        </div>
+
+                    </el-card>
+                </div>
+                <!-- 底部 -->
+                <div class="footer">
+                    &copy;Copyright 2018 华联超市管理系统
+                </div>
+            </el-main>
+        </el-container>
+    </div>
+    <script>
+        // 创建实例
+        new Vue({
+            el: '#app',
+            //验证表单
+            data() {
+                
+                //验证密码一致性
+                let checkPass = (rule, value, callback) => {
+                    //判断密码是否为空
+                    if (value === '') {
+                        // callback(new Error('请再次输入密码！'))
+                    } else if (value != this.loginForm.password) {
+                        callback(new Error('两次密码输入不一致！'))
+                    } else {
+                        callback();
+                    }
+                }
+                return {
+                    loginForm: [{
+                        username: '',
+                        password: '',
+                        comfirmPassword: '',
+                        region: ''
+                    }],
+                    rules: {   //验证登录的规则
+                        //验证账户名
+                        username: [
+                            { required: true, message: '请输入用户名', trigger: 'blur' },
+                            { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
+                        ],
+                        //验证密码
+                        password: [
+                            { required: true, message: '请输入用户密码', trigger: 'blur' },
+                            { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
+                        ],
+                        //确定密码一致性
+                        comfirmPassword: [
+                            { required: true, message: '请再次输入密码！', trigger: 'blur' },
+                            { validator: checkPass, trigger: 'blur' }
+                        ],
+                        region:[
+                            { required: true, message: '请至少选择一个', trigger: 'change' }
+                        ]
+                    }
+                }
+            },
+            methods: {
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        if (valid) {
+                            //定义变量接受数据
+                            let params={
+                                "username":this.loginForm.username,
+                                "password":this.loginForm.password,
+                                "region":this.loginForm.region
+                            }
+                            // 如果成功发送ajax请求
+                            $.post('/users/userAdd',params,function(){
+                            })
+                        } else {
+                            // console.log('不能提交');
+                            return false;
+                        }
+                    });
+                },
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                },
+                // 公共必须
+                handleOpen(key, keyPath) {
+                    console.log(key, keyPath);
+                },
+                handleClose(key, keyPath) {
+                    console.log(key, keyPath);
+                }
+            },
+        })
+    </script>
+</body>
+
+</html>

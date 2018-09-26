@@ -1,0 +1,18 @@
+
+/* 定义基本样式 */
+html,body{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+/* 定义登录框 */
+#loginForm{
+    width: 400px;
+    height: 300px;
+    padding-bottom: 15px;
+    border-radius: 7px;
+}
+
+#loginForm .el-input{
+    width: 400px;
+}

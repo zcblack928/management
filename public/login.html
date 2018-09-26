@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>登录</title>
+    <!-- vue.min.js -->
+    <script src="./libs/vue/vue.min.js"></script>
+    <!-- elementui.min.js -->
+    <script src="./libs/elementui/js/elementui.min.js"></script>
+    <!-- elementui.min.css -->
+    <link rel="stylesheet" href="./libs/elementui/css/elementui.min.css">
+    <!-- 自己的样式 -->
+    <link rel="stylesheet" href="./styles/login.css">
+    <!-- 引入jquery -->
+    <link rel="stylesheet" href="./libs/jquery/jquery.min.js">
+    <!-- 引入特效jquery -->
+    <link rel="stylesheet" href="./styles/effect.css">
+    <!-- 引入js -->
+    <script src="./scripts/css3.js"></script>
+</head>
+
+<body>
+    <!-- 创建模板 -->
+    <div id="app">
+        <!-- 登录页面 -->
+        <div id="loginForm">
+            <h2 class="title">
+                <i class="el-icon-news"></i>
+                超市管理系统登录
+            </h2>
+            <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm" label-width="100px" class="demo-ruleForm">
+                <el-form-item label="账&emsp;号" prop="username">
+                    <el-input type="text" v-model="loginForm.username" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="密&emsp;码" prop="password">
+                    <el-input type="password" v-model="loginForm.password" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="确认密码" prop="comfirmPassword">
+                    <el-input v-model.number="loginForm.comfirmPassword"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
+                    <el-button @click="resetForm('loginForm')">重置</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+        <!-- 特效 -->
+        <div class="middle">
+            <div class="scene">
+                <div class="box">
+                    <ul class="ring">
+
+                    </ul>
+                </div>
+                <div class="item">
+                    <p>北国风光，千里冰封，万里雪飘。望长城内外，惟余莽莽；大河上下，顿失滔滔。山舞银蛇，原驰蜡象，欲与天公试比高。须晴日，看红装素裹，分外妖娆。江山如此多娇，引无数英雄竞折腰。惜秦皇汉武，略输文采；唐宗宋祖，稍逊风骚。一代天骄，成吉思汗，只识弯弓射大雕。俱往矣，数风流人物，还看今朝。</p>
+                    <a href="javascript:;" class="close"></a>
+                </div>
+            </div>
+            <div class="text">
+                <p>在下面输入你自己的文字（建议50-350字）</p>
+                <textarea cols="30" rows="10"></textarea>
+                <div class="btn">
+                    <button>提交</button>
+                    <button>重置</button>
+                </div>
+                <a href="javascript:;" class="close"></a>
+            </div>
+            <div class="table">
+                <a href="javascript:;" class="active">圆球</a>
+                <a href="javascript:;">圆锥</a>
+                <a href="javascript:;">柱状</a>
+                <a href="javascript:;">柱状扭曲</a>
+            </div>
+            <!-- <div class="line"></div> -->
+            <div class="btn2">
+                <button>展开</button>
+                <button>自定义文字</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // 创建实例
+        new Vue({
+            el: '#app',
+            //验证表单
+            data() {
+                //验证密码一致性
+                let checkPass = (rule, value, callback) => {
+                    //判断密码是否为空
+                    if (value === '') {
+                        // callback(new Error('请再次输入密码！'))
+                    } else if (value != this.loginForm.password) {
+                        callback(new Error('两次密码输入不一致！'))
+                    } else {
+                        callback();
+                    }
+                }
+                return {
+                    loginForm: [{
+                        username: '',
+                        password: '',
+                        comfirmPassword: ''
+                    }],
+                    rules: {   //验证登录的规则
+                        //验证账户名
+                        username: [
+                            { required: true, message: '请输入用户名', trigger: 'blur' },
+                            { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
+                        ],
+                        //验证密码
+                        password: [
+                            { required: true, message: '请输入用户密码', trigger: 'blur' },
+                            { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
+                        ],
+                        //确定密码一致性
+                        comfirmPassword: [
+                            { required: true, message: '请再次输入密码！', trigger: 'blur' },
+                            { validator: checkPass, trigger: 'blur' }
+                        ]
+
+                    }
+                }
+            },
+            methods: {
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        if (valid) {
+                            alert('提交成功');
+                        } else {
+                            console.log('不能提交');
+                            return false;
+                        }
+                    });
+                },
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                }
+            }
+        })
+    </script>
+
+
+</body>
+
+</html>
