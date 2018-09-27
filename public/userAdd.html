@@ -47,10 +47,10 @@
                                     <el-input type="password" v-model="loginForm.password" autocomplete="off"></el-input>
                                 </el-form-item>
                                 <el-form-item label="确认密码" prop="comfirmPassword">
-                                    <el-input v-model.number="loginForm.comfirmPassword"></el-input>
+                                    <el-input type="password" v-model.number="loginForm.comfirmPassword"></el-input>
                                 </el-form-item>
-                                <el-form-item label="选择用户组" prop="region">
-                                    <el-select v-model="loginForm.region" placeholder="请选择用户组">
+                                <el-form-item label="选择用户组" prop="groups">
+                                    <el-select v-model="loginForm.groups" placeholder="请选择用户组">
                                         <el-option label="普通会员" value="普通会员"></el-option>
                                         <el-option label="超级会员" value="超级会员"></el-option>
                                     </el-select>
@@ -94,7 +94,7 @@
                         username: '',
                         password: '',
                         comfirmPassword: '',
-                        region: ''
+                        groups: ''
                     }],
                     rules: {   //验证登录的规则
                         //验证账户名
@@ -112,7 +112,7 @@
                             { required: true, message: '请再次输入密码！', trigger: 'blur' },
                             { validator: checkPass, trigger: 'blur' }
                         ],
-                        region:[
+                        groups:[
                             { required: true, message: '请至少选择一个', trigger: 'change' }
                         ]
                     }
@@ -122,15 +122,24 @@
                 submitForm(formName) {
                     this.$refs[formName].validate((valid) => {
                         if (valid) {
-                            //定义变量接受数据
+                            //定义要发送的数据
                             let params={
                                 "username":this.loginForm.username,
                                 "password":this.loginForm.password,
-                                "region":this.loginForm.region
+                                "groups":this.loginForm.groups
                             }
-                            // 如果成功发送ajax请求
-                            $.post('/users/userAdd',params,function(){
-                            })
+                           //向后端发送ajax请求
+                           $.post('/users/userAdd',params,function(data){
+                               //根据后端返回的信息判断
+                               if(data.errcode==1){
+                                   //成功
+                                   alert('添加成功');
+                                   //跳转到账号列表
+                                   location.href="./userList.html"
+                               }else{
+                                alert('添加失败');                                   
+                               }
+                           })
                         } else {
                             // console.log('不能提交');
                             return false;

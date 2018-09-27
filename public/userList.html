@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>账号管理</title>
+    <!-- 引入jquery -->
+    <script src="./libs/jquery/jquery.min.js"></script>
     <!-- vue.min.js -->
     <script src="./libs/vue/vue.min.js"></script>
     <!-- elementui.min.js -->
@@ -21,7 +23,7 @@
     <!-- 创建模板 -->
     <div id="app">
         <el-container>
-           
+
             <!-- 右边容器 -->
             <el-main>
                 <!-- 顶部 -->
@@ -36,20 +38,53 @@
                             <h4>账号管理</h4>
                         </div>
                         <!-- 账号管理 -->
-                            <!-- 表格内容 -->
-                            <el-table :data="tableData" style="width: 100%">
-                                <el-table-column prop="goodsName" label="用户名称">
-                                </el-table-column>
-                                <el-table-column prop="repertory" label="用户组">
-                                </el-table-column>
-                                <el-table-column label="管理    ">
-                                    <template slot-scope="scope">
-                                        <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                                        <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                                    </template>
-                                </el-table-column>
-                            </el-table>
+                        <!-- 表格内容 -->
+                        <el-table :data="tableData" style="width: 100%">
+                            <el-table-column prop="username" label="用户名称">
+                            </el-table-column>
+                            <el-table-column prop="groups" label="用户组">
+                            </el-table-column>
+                            <el-table-column label="日期">
+                                <template slot-scope="scope">{{ scope.row.ctime.substr(0,10) }}</template>
+                            </el-table-column>
+                            <el-table-column label="管理    ">
+                                <template slot-scope="scope">
+                                    <el-button size="mini" @click="handleEdit(scope.row.id)" @click.native="dialogFormVisible = true">编辑</el-button>
+                                    <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
                     </el-card>
+                    <!-- 弹出 -->
+                    <!-- <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button> -->
+                    <!-- 标题 -->
+                    <el-dialog title="修改内容" :visible.sync="dialogFormVisible">
+                        <!-- 表单内容 -->
+                        <div id="loginForm">
+                                <i class="el-icon-edit"></i>
+                            <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm" label-width="100px" class="demo-ruleForm">
+                                <el-form-item label="账&emsp;号" prop="username">
+                                    <el-input type="text" v-model="loginForm.username" autocomplete="off"></el-input>
+                                </el-form-item>
+                                <el-form-item label="密&emsp;码" prop="password">
+                                    <el-input type="password" v-model="loginForm.password" autocomplete="off"></el-input>
+                                </el-form-item>
+                                <!-- <el-form-item label="确认密码" prop="comfirmPassword">
+                                    <el-input type="password" v-model.number="loginForm.comfirmPassword"></el-input>
+                                </el-form-item> -->
+                                <el-form-item label="选择用户组" prop="groups">
+                                    <el-select v-model="loginForm.groups" placeholder="请选择用户组">
+                                        <el-option label="普通会员" value="普通会员"></el-option>
+                                        <el-option label="超级会员" value="超级会员"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button type="primary" @click.native="submitForm('loginForm')" @click="dialogFormVisible = false">修改</el-button>
+                                    <el-button @click="resetForm('loginForm')">重置</el-button>
+                                </el-form-item>
+                            </el-form>
+                        </div>
+                    </el-dialog>
                 </div>
                 <!-- 底部 -->
                 <div class="footer">
@@ -63,16 +98,65 @@
         new Vue({
             el: '#app',
             data() {
+
+                //验证密码一致性
+                let checkPass = (rule, value, callback) => {
+                    //判断密码是否为空
+                    if (value === '') {
+                        // callback(new Error('请再次输入密码！'))
+                    } else if (value != this.loginForm.password) {
+                        callback(new Error('两次密码输入不一致！'))
+                    } else {
+                        callback();
+                    }
+                }
                 return {
-                    tableData: [{
-                        goodsName: 'admin',
-                        repertory: '超级会员',
-                    }]
+                    //列表内容
+                    tableData: [],
+                    dialogTableVisible: false,
+                    dialogFormVisible: false,
+                    //表单内容
+                    loginForm: [],
+                    formLabelWidth: '120px',
+                    rules: {   //验证登录的规则
+                        //验证账户名
+                        username: [
+                            { required: true, message: '请输入用户名', trigger: 'blur' },
+                            { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
+                        ],
+                        //验证密码
+                        password: [
+                            { required: true, message: '请输入用户密码', trigger: 'blur' },
+                            { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
+                        ],
+                        //确定密码一致性
+                        comfirmPassword: [
+                            { required: true, message: '请再次输入密码！', trigger: 'blur' },
+                            { validator: checkPass, trigger: 'blur' }
+                        ],
+                        groups: [
+                            { required: true, message: '请至少选择一个', trigger: 'change' }
+                        ]
+                    },
+                    //弹出表单
+
                 }
             },
-
+            //生命周期中created中发送ajax请求
+            created() {
+                //调用一次请求所有数据的方法
+                this.getALLData();
+            },
             methods: {
-                
+                //获取所有数据的方法
+                getALLData() {
+                    //保存this
+                    let _this = this;
+                    $.get('/users/userList', function (data) {
+                        _this.tableData = data;
+                    })
+                },
+
                 // 公共页面
                 handleOpen(key, keyPath) {
                     console.log(key, keyPath);
@@ -80,12 +164,57 @@
                 handleClose(key, keyPath) {
                     console.log(key, keyPath);
                 },
-                //缺货商品
-                handleEdit(index, row) {
-                    console.log(index, row);
+                //手动编辑
+                handleEdit(id) {
+                    //保存this
+                    let _this = this;
+                    $.get(`/users/edit?id=${id}`, function (data) {
+                        //把数据回填给添加页面
+                        _this.loginForm = data[0];
+                        console.log(_this.loginForm)
+                    })
                 },
-                handleDelete(index, row) {
-                    console.log(index, row);
+                //更新
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        if (valid) {
+                            //定义要发送的数据
+                            let params={
+                                "username":this.loginForm.username,
+                                "password":this.loginForm.password,
+                                "groups":this.loginForm.groups,
+                                "id":this.loginForm.id
+                            }
+                           //向后端发送ajax请求
+                           $.post('/users/userAdd',params,function(data){
+                               //根据后端返回的信息判断
+                               if(data.errcode==1){
+                                   //成功
+                                   alert('修改成功');
+                                   //跳转到账号列表
+                                   location.href="./userList.html"
+                               }else{
+                                alert('修改失败');                                   
+                               }
+                           })
+                        } else {
+                            // console.log('不能提交');
+                            return false;
+                        }
+                    });
+                },
+                //重置
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                },
+                //手动删除
+                handleDelete(id) {
+                    //保存this
+                    let _this = this;
+                    $.get(`/users/delete?id=${id}`, function (data) {
+                        //再执行一次请求所有数据方法
+                        _this.getALLData();
+                    })
                 }
             }
         })
