@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>系统信息</title>
+    <!-- 引入jquer -->
+    <script src="./libs/jquery/jquery.min.js"></script>
     <!-- vue.min.js -->
     <script src="./libs/vue/vue.min.js"></script>
     <!-- elementui.min.js -->
@@ -14,8 +16,9 @@
     <link rel="stylesheet" href="./libs/elementui/css/elementui.min.css">
     <!-- 自己的样式 -->
     <link rel="stylesheet" href="./styles/index.css">
+    <!-- 发送验证是否登录请求 -->
+    <script src="/users/checkIsLogin"></script>
 </head>
-
 <body>
     <!-- 创建模板 -->
     <div id="app">
@@ -24,11 +27,11 @@
             <el-aside  width="230px">
                 <!-- 标题 -->
                 <h2>华联超市管理系统</h2>
-                <p>您好，admin</p>
-                <img src="./images/5555.png" alt="">
+                <p>您好，<span :model="loginForm" style="color: skyblue">{{loginForm.username}}</span></p>
+                <img class="magePig" src="./images/5555.png" alt="">
                 <p>
                     <a href="./commom.html" target="iframeCommom">管理首页</a> |
-                    <a href="./login.html">退出系统</a>
+                    <a href="javascript:if(confirm('确定退出吗？'))location='/users/logout'">退出系统</a>
                 </p>
                 <el-menu :default-openeds="['5']" :unique-opened="true" default-active="'5-1'" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose">
                     <el-submenu index="1">
@@ -39,7 +42,7 @@
                         <el-menu-item-group>
                             <el-menu-item index="1-1"><a href="./userAdd.html" target="iframeCommom">添加账号</a> </el-menu-item>
                             <el-menu-item index="1-2"><a href="./userList.html" target="iframeCommom">账号列表</a> </el-menu-item>
-                            <el-menu-item index="1-3">密码修改</el-menu-item>
+                            <el-menu-item index="1-3"><a href="./changePsd.html" target="iframeCommom">密码修改</a></el-menu-item>
                     </el-submenu>
                     <el-submenu index="2">
                         <template slot="title">
@@ -114,11 +117,37 @@
                     tableData: [{
                         goodsName: '国庆套',
                         repertory: '100',
+                    }],
+                    loginForm:[{
+                        username:''
                     }]
                 }
             },
-
+            created(){
+               this.getLoginUser();
+            },
             methods: {
+                //定义一个获取登录用户信息的方法
+                getLoginUser(){
+                //把字符串分割成数组
+                let result=document.cookie.split(' ')
+                let user=result[0].substr(9,result[0].indexOf(';'));
+                let username=user.substr(0,user.indexOf(';'));
+                let pass=result[1].substr(9,result[1].indexOf(';'));
+                let oldPassword=pass.substr(0,pass.indexOf(';'));
+                let id=result[3].substr(3);
+                
+                //保存原来的this
+                let _this=this;
+                //发送ajax请求请求原来数据
+                $.get(`/users/getOldData?id="${id}"`,function(data){
+                    console.log(data[0])
+                    _this.loginForm=data[0];
+                })
+                //把数据绑定给输入框
+                // this.loginForm.password=oldPassword;
+
+                },
                 toggleSelection(rows) {
                     if (rows) {
                         rows.forEach(row => {
@@ -146,6 +175,12 @@
                 }
             }
         })
+        //图片动画
+        setTimeout(function(){
+            // $('.magePig').show(1000);
+            let pig=document.querySelector('.magePig');
+            pig.style.opacity="1";
+        },2000)
     </script>
 </body>
 

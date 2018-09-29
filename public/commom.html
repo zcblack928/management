@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>系统信息</title>
+    <!-- 引入jquery -->
+    <script src="./libs/jquery/jquery.min.js"></script>
     <!-- vue.min.js -->
     <script src="./libs/vue/vue.min.js"></script>
     <!-- elementui.min.js -->
@@ -26,7 +28,7 @@
             <el-main>
                 <!-- 顶部 -->
                 <div class="el-main-top">
-                    <h1>欢迎您 admin</h1>
+                    <h1>欢迎您 <span style="color: skyblue">{{loginForm.username}}</span></h1>
                     <p>查看详细系统信息。</p>
                 </div>
                 <!-- 中间主体 -->
@@ -125,11 +127,44 @@
                     tableData: [{
                         goodsName: '国庆套',
                         repertory: '100',
+                    }],
+                    loginForm:[{
+                        username:''
                     }]
                 }
             },
-
+            //生命周期中created中发送ajax请求
+            created() {
+                //调用一次请求所有数据的方法
+                this.getLoginUser();
+            },
             methods: {
+                //定义一个获取登录用户信息的方法
+                getLoginUser(){
+                    //获取cookie中的账号名
+                //     let username= document.cookie.substr(9,document.cookie.indexOf(';'));
+                //    let result=username.substr(0,username.indexOf(';'))
+                //把字符串分割成数组
+                let result=document.cookie.split(' ')
+                let user=result[0].substr(9,result[0].indexOf(';'));
+                let username=user.substr(0,user.indexOf(';'));
+                let pass=result[1].substr(9,result[1].indexOf(';'));
+                let oldPassword=pass.substr(0,pass.indexOf(';'));
+                let id=result[3].substr(3);
+                // console.log(username)
+                // console.log(oldPassword)
+                // console.log(id)
+                //保存原来的this
+                let _this=this;
+                //发送ajax请求请求原来数据
+                $.get(`/users/getOldData?id="${id}"`,function(data){
+                    console.log(data[0])
+                    _this.loginForm=data[0];
+                })
+                //把数据绑定给输入框
+                // this.loginForm.password=oldPassword;
+
+                },
                 toggleSelection(rows) {
                     if (rows) {
                         rows.forEach(row => {

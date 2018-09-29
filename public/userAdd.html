@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>修改账号密码</title>
+    <title>添加账号</title>
     <!-- 引入jquery -->
     <script src="./libs/jquery/jquery.min.js"></script>
     <!-- vue.min.js -->
@@ -17,6 +17,8 @@
     <!-- 自己的样式 -->
     <link rel="stylesheet" href="./styles/index.css">
     <link rel="stylesheet" href="./styles/userAdd.css">
+    <!-- 发送验证是否登录请求 -->
+    <script src="/users/checkIsLogin"></script>
 </head>
 
 <body>
@@ -28,14 +30,14 @@
             <el-main>
                 <!-- 顶部 -->
                 <div class="el-main-top">
-                    <h1>欢迎您 admin</h1>
-                    <p>修改账号密码</p>
+                    <h1>欢迎您  <span style="color: skyblue">{{loginForm.loginName}}</span></h1>
+                    <p>添加账号</p>
                 </div>
                 <!-- 中间主体 -->
                 <div class="el-center">
                     <el-card class="box-card">
                         <div slot="header" class="clearfix">
-                            <h4>修改账号密码</h4>
+                            <h4>添加账号</h4>
                         </div>
                         <!-- 修改账号密码界面 -->
                         <div id="loginForm">
@@ -56,7 +58,7 @@
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
+                                    <el-button type="primary" @click="submitForm('loginForm')">确认添加</el-button>
                                     <el-button @click="resetForm('loginForm')">重置</el-button>
                                 </el-form-item>
                             </el-form>
@@ -77,7 +79,22 @@
             el: '#app',
             //验证表单
             data() {
-                
+                //验证账号是否已存在
+                let checkUsernameIsHave=(rule, value, callback)=>{
+                    // let params={"username":this.loginForm.username}
+                    // console.log(params)
+                    //保存this
+                    let _this=this;
+                    //发送ajax请求查看是否存在用户名
+                    $.post('/users/checkUsernameIsHave',{"username":value},function(data){
+                        //判断用户名是否存在
+                        if (data.errcode===1) {
+                            callback(new Error('已存在用户名！'))
+                        } else {
+                            callback();
+                        }
+                    })
+                }
                 //验证密码一致性
                 let checkPass = (rule, value, callback) => {
                     //判断密码是否为空
@@ -90,17 +107,19 @@
                     }
                 }
                 return {
-                    loginForm: [{
+                    loginForm: {
+                        loginName:'',
                         username: '',
                         password: '',
                         comfirmPassword: '',
                         groups: ''
-                    }],
+                    },
                     rules: {   //验证登录的规则
                         //验证账户名
                         username: [
                             { required: true, message: '请输入用户名', trigger: 'blur' },
-                            { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
+                            { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' },
+                            { validator: checkUsernameIsHave, trigger: 'blur' }
                         ],
                         //验证密码
                         password: [
@@ -118,7 +137,31 @@
                     }
                 }
             },
+            //生命周期中created中发送ajax请求
+            created() {
+                //调用一次请求所有数据的方法
+                this.getLoginUser();
+            },
             methods: {
+                 //定义一个获取登录用户信息的方法
+                 getLoginUser(){
+                //把字符串分割成数组
+                let result=document.cookie.split(' ')
+                let user=result[0].substr(9,result[0].indexOf(';'));
+                let username=user.substr(0,user.indexOf(';'));
+                let pass=result[1].substr(9,result[1].indexOf(';'));
+                let oldPassword=pass.substr(0,pass.indexOf(';'));
+                let id=result[3].substr(3);
+                //保存原来的this
+                let _this=this;
+                //发送ajax请求请求原来数据
+                $.get(`/users/getOldData?id="${id}"`,function(data){
+                    // console.log(data[0])
+                    _this.loginForm.loginName=data[0].username;
+                })
+                // //把数据绑定给输入框
+                // // this.loginForm.password=oldPassword;
+                },
                 submitForm(formName) {
                     this.$refs[formName].validate((valid) => {
                         if (valid) {

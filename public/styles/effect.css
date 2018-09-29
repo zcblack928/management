@@ -43,6 +43,7 @@ li {
 }
 
 .middle {
+	display: none;
 	width: 1000px;
 	height: 620px;
 	position: absolute;
@@ -174,6 +175,7 @@ li.one {
 	width: 100px;
 	height: 12px;
 	padding-top: 60px;
+	padding-left: 20px;
 	font-size: 12px;
 	line-height: 12px;
 	text-align: center;
@@ -310,16 +312,17 @@ button.active {
 
 /* 特效的css */
 .middle{
-	width: 400px;
-	height: 400px;
-	margin-left: -220px;
-	margin-top: -200px;
+	width: 900px;
+	height: 350px;
+	margin-left: -65px;
+	margin-top: -190px;
+	z-index: 100;
 }
 .scene{
 	color: #ccc;
 	/* margin-left: -20px; */
-	height: 400px;
-	width: 400px;
+	height: 490px;
+	width: 500px;
 }
 .table a{
 	width: 30px;

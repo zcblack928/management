@@ -42,7 +42,7 @@ html,body{
     /* width: 230px; */
 }
 .el-aside>img{
-    width: 170px;
+    width: 150px;
     position: absolute;
     top: 400px;
     left: 30px;
@@ -203,3 +203,11 @@ html,body{
       border-top: 1px solid #ccc;
       color: #fff;
   }
+/* 图片变化 */
+.magePig{
+    opacity: 0;
+    transition:all 2s;
+}
+.magePig:hover{
+    transform: scale3d(1.2,1.2,1.2) rotateZ(-10deg) rotateY(-720deg);
+}
